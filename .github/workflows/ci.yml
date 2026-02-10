@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Build Docker images
+        run: docker compose build
+
+      - name: Start Docker containers
+        run: docker compose up -d
+
+      - name: Wait for p4d to be ready
+        run: |
+          echo "Waiting for p4d to start..."
+          for i in {1..12}; do
+            if docker exec perforce-p4d p4 -p localhost:1666 info > /dev/null 2>&1; then
+              echo "p4d is ready!"
+              break
+            fi
+            if [ $i -eq 12 ]; then
+              echo "p4d failed to start"
+              docker compose logs perforce
+              exit 1
+            fi
+            echo "Attempt $i/12: p4d not ready yet, waiting..."
+            sleep 5
+          done
+
+      - name: Verify p4d server info
+        run: |
+          echo "Server info:"
+          docker exec perforce-p4d p4 -p localhost:1666 info
+
+      - name: Show container logs (on failure)
+        if: failure()
+        run: docker compose logs perforce
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
