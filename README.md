@@ -1,6 +1,7 @@
 # Self-Hosted Perforce (P4D) on Docker
 
 [![CI](https://github.com/ali-ramadhan/docker-perforce-p4d/actions/workflows/ci.yml/badge.svg)](https://github.com/ali-ramadhan/docker-perforce-p4d/actions/workflows/ci.yml)
+[![Docker Image Version](https://img.shields.io/docker/v/aliramadhan/perforce-p4d)](https://hub.docker.com/r/aliramadhan/perforce-p4d)
 
 [Perforce Helix Core](https://www.perforce.com/products/helix-core) is a version control system built for large-scale projects with big binary assets (game dev, VFX, hardware design, etc.). It's free for teams of up to five!
 
