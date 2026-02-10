@@ -12,6 +12,11 @@ if [ ! -d "$P4ROOT" ]; then
     mkdir -p "$P4ROOT"
 fi
 
+# Set ServerID to suppress topology registration warnings
+if [ ! -f "$P4ROOT/server.id" ]; then
+    echo "p4d" > "$P4ROOT/server.id"
+fi
+
 # Build p4d arguments
 P4D_ARGS="-r $P4ROOT -p $P4PORT"
 
