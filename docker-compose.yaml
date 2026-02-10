@@ -5,6 +5,10 @@ services:
     restart: unless-stopped
     ports:
       - "1666:1666"
+    environment:
+      - P4PORT=1666
+      - P4USER=admin
+      - P4PASSWD=changeme
     volumes:
       # Metadata (ideally on NVMe/SSD)
       - p4_metadata:/opt/perforce/server
