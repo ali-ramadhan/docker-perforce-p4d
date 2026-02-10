@@ -25,17 +25,21 @@ jobs:
       - name: Wait for p4d to be ready
         run: |
           echo "Waiting for p4d to start..."
-          for i in {1..12}; do
-            if docker exec perforce-p4d p4 -p localhost:1666 info > /dev/null 2>&1; then
+          for i in {1..24}; do
+            # Wait for the final server (not the temporary bootstrap server)
+            # by checking that the normal startup log line has appeared AND
+            # the server is accepting connections.
+            if docker compose logs perforce 2>&1 | grep -q "Starting Perforce Server on port" && \
+               docker exec perforce-p4d p4 -p localhost:1666 info > /dev/null 2>&1; then
               echo "p4d is ready!"
               break
             fi
-            if [ $i -eq 12 ]; then
+            if [ $i -eq 24 ]; then
               echo "p4d failed to start"
               docker compose logs perforce
               exit 1
             fi
-            echo "Attempt $i/12: p4d not ready yet, waiting..."
+            echo "Attempt $i/24: p4d not ready yet, waiting..."
             sleep 5
           done
 
