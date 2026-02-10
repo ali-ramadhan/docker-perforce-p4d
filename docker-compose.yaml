@@ -1,0 +1,17 @@
+services:
+  perforce:
+    build: .
+    container_name: perforce-p4d
+    restart: unless-stopped
+    ports:
+      - "1666:1666"
+    volumes:
+      # Metadata (ideally on NVMe/SSD)
+      - p4_metadata:/opt/perforce/server
+
+      # Depots (could be on HDD)
+      - p4_depots:/opt/perforce/server/depots
+
+volumes:
+  p4_metadata:
+  p4_depots:
