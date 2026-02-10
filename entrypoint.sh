@@ -6,6 +6,7 @@ set -e
 : "${P4PORT:=1666}"
 : "${P4USER:=admin}"
 : "${P4PASSWD:=changeme}"
+: "${P4SECURITY:=1}"
 
 # Ensure server root directory exists
 if [ ! -d "$P4ROOT" ]; then
@@ -62,11 +63,10 @@ if [ ! -f "$P4ROOT/db.domain" ]; then
     # the server now expects authentication for this user.
     echo "$P4PASSWD" | p4 -p $P4PORT -u "$P4USER" login
 
-    # Enforce passwords by setting security level 1
-    #    Level 0 (default) does not require passwords at all.
-    #    Level 1 requires all users to have passwords.
-    echo "Setting server security level to 1..."
-    p4 -p $P4PORT -u "$P4USER" configure set security=1
+    # Set security level
+    # See: https://help.perforce.com/helix-core/server-apps/p4sag/current/Content/P4SAG/security-levels.html
+    echo "Setting server security level to $P4SECURITY..."
+    p4 -p $P4PORT -u "$P4USER" configure set security="$P4SECURITY"
 
     # Shut down the temporary server cleanly
     echo "Initialization complete. Stopping temporary server..."

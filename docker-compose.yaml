@@ -9,6 +9,7 @@ services:
       - P4PORT=1666
       - P4USER=admin
       - P4PASSWD=changeme
+      - P4SECURITY=1
     volumes:
       # Metadata (ideally on NVMe/SSD)
       - p4_metadata:/opt/perforce/server
