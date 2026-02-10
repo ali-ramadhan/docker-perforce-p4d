@@ -44,6 +44,26 @@ jobs:
           echo "Server info:"
           docker exec perforce-p4d p4 -p localhost:1666 info
 
+      - name: Verify admin login
+        run: |
+          echo "changeme" | docker exec -i perforce-p4d p4 -p localhost:1666 -u admin login
+          echo "Admin login successful."
+
+      - name: Verify admin has super access
+        run: |
+          docker exec perforce-p4d p4 -p localhost:1666 -u admin protects -m
+          echo "Admin protects check passed."
+
+      - name: Verify security level
+        run: |
+          SECURITY=$(docker exec perforce-p4d p4 -p localhost:1666 -u admin configure show security | grep -o 'security=[0-9]*' | head -1)
+          echo "Current setting: $SECURITY"
+          if [ "$SECURITY" != "security=1" ]; then
+            echo "ERROR: Expected security=1, got $SECURITY"
+            exit 1
+          fi
+          echo "Security level verified."
+
       - name: Show container logs (on failure)
         if: failure()
         run: docker compose logs perforce
