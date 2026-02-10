@@ -53,6 +53,10 @@ if [ ! -f "$P4ROOT/db.domain" ]; then
     echo "Setting password for $P4USER..."
     p4 -p $P4PORT -u "$P4USER" passwd -P "$P4PASSWD"
 
+    # Log in to get a ticket — required before further commands since
+    # the server now expects authentication for this user.
+    echo "$P4PASSWD" | p4 -p $P4PORT -u "$P4USER" login
+
     # Enforce passwords by setting security level 1
     #    Level 0 (default) does not require passwords at all.
     #    Level 1 requires all users to have passwords.
