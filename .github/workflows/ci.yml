@@ -7,12 +7,12 @@ on:
       - main
 
 jobs:
-  docker-test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Build Docker images
         run: docker compose build
@@ -49,3 +49,23 @@ jobs:
       - name: Cleanup
         if: always()
         run: docker compose down -v
+
+  publish:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        run: |
+          docker build -t aliramadhan/perforce-p4d:latest .
+          docker push aliramadhan/perforce-p4d:latest
